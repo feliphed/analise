@@ -41,7 +41,7 @@ def datetime_now():
     return datetime.now().strftime("%m/%d/%Y %H:%M:%S") # informações de data
 
 
-def post_formdata(payload, url="", headers=None, params=None, is_sleep=True): #método para se comunicar com o jogo, tudo OK!
+def post_formdata(payload, url="", headers=None, params=None, is_sleep=True): #método para se comunicar com o jogo, tudo OK! <<<INÌCIO>>>
     """Method to send request to game"""
     files = []
     if headers is None:
@@ -64,8 +64,8 @@ def post_formdata(payload, url="", headers=None, params=None, is_sleep=True): #m
         except:
             continue
     return {}
-    
-def auto_buy_request(url, address, headers, session, requestsNumber):
+    #<<FIM DA PARTE>> OK!
+def auto_buy_request(url, address, headers, session, requestsNumber): # comunicação com o jogo, se refere ao playload, endereço, orderID e componentes power score. Nada malicioso.
     """Method to send request to game"""
     tasks = []   
     requestsNumber = requestsNumber + 50
@@ -78,9 +78,9 @@ def auto_buy_request(url, address, headers, session, requestsNumber):
 def get_battler_score(monster):
     """ Get opponent's power score"""
     return monster["sca"]
+# <fim da parte. Analisado.>
 
-
-def picker_battler(monsters_list, other_fighting_mode):
+def picker_battler(monsters_list, other_fighting_mode): #Se refere ao Picking opponent no jogo, rarity, Battle, etc. Nada malicioso.
     """ Picking opponent """
     battlers = list(filter(lambda m: m["rarity"] == "N", monsters_list))
 
@@ -113,15 +113,15 @@ def picker_battler(monsters_list, other_fighting_mode):
 
 
 def pick_battle_level(level=1):
-    # pick highest league for given level
+    # pick highest league for given level - se refere ao level no jogo. Nada malicioso.
     if 21 <= level <= 40:
         return 2
     if 41 <= level <= 60:
         return 3
     return 1
+# <fim da parte>
 
-
-class MetamonPlayer:
+class MetamonPlayer: #inclui as informações no jogo para permitir as alterações. 
     
     def __init__(self,
                  address,
@@ -166,14 +166,14 @@ class MetamonPlayer:
         self.add_healthy = add_healthy
         self.is_use_green_potion_only = is_use_green_potion_only
     def init_token(self):
-        """Obtain token for game session to perform battles and other actions"""
-        payload = {"address": self.address, "sign": self.sign, "msg": self.msg, "network": "1", "clientType": "MetaMask"}
+        """Obtain token for game session to perform battles and other actions""" #comentário do próprio desenvolvedor explicando o uso.
+        payload = {"address": self.address, "sign": self.sign, "msg": self.msg, "network": "1", "clientType": "MetaMask"} #busca informação do token
         response = post_formdata(payload, TOKEN_URL)
-        if response.get("code") != "SUCCESS":
-            sys.stderr.write("Login failed, token is not initialized. Terminating\n")
+        if response.get("code") != "SUCCESS": #caso retorne o token, informe o sucesso.
+            sys.stderr.write("Login failed, token is not initialized. Terminating\n") #caso o token não seja informado, retorna o erro.
             sys.exit(-1)
-        self.token = response.get("data").get("accessToken")
-        
+        self.token = response.get("data").get("accessToken") #envia a informação para o código abaixo
+        #a parte do código acima somente obtém o token MetaMask para realizar as operações no jogo, como podemos ver a seguir:
     def get_token_ids(self):
         self.init_token()
         print("Metamons token id are exporting ...")
@@ -181,7 +181,7 @@ class MetamonPlayer:
         mtm_stats = []
         for mtm in mtms:
             token_id = mtm.get("tokenId")
-            print(f"Export Metamon Token Id {token_id}")
+            print(f"Export Metamon Token Id {token_id}") #exporta id Metamon Token, operação do Jogo. OK!
             level = mtm.get("level")
             print (token_id)
             mtm_stats.append({
@@ -192,7 +192,7 @@ class MetamonPlayer:
         mtm_stats_df.to_csv("Metamon Token Id", sep="\t", index=False)
         
     def reset_exp(self, mtmId):
-        """Obtain list of opponents"""
+        """Obtain list of opponents""" 
         try:
             payload = {
                 "address": self.address,
@@ -205,11 +205,11 @@ class MetamonPlayer:
             print(response)
             return response
         except Exception as e:
-            print(f"Reset monster failed {e}")
+            print(f"Reset monster failed {e}") # se refere aos oponentes no jogo. OK!
         return None
        
     def buy_item(self):
-        print("Starting buy purple potion...")
+        print("Starting buy purple potion...") # Operações do jogo. OK!
         if self.token == None:
             self.init_token()
         headers = {
@@ -234,7 +234,7 @@ class MetamonPlayer:
         print(response)
         
     def get_kingdom_monsters(self):
-        """ Get List of squad ing metamon kingdom"""
+        """ Get List of squad ing metamon kingdom""" #Se refere a operações do Jogo. OK!
         payload = {'address': self.address, 'orderType': 2, 'position': 2}
         headers = {
             "accesstoken": self.token,
@@ -248,14 +248,14 @@ class MetamonPlayer:
         return monsters
         
     def get_squads(self):
-        """ Get List of squad ing metamon kingdom"""
+        """ Get List of squad ing metamon kingdom""" #Se refere a operações do Jogo. OK!
         payload = {'address': self.address, 'teamId': -1, 'pageSize': 9999}
         headers = {
             "accesstoken": self.token,
         }
         response = post_formdata(payload, SQUAD_LIST_URL, headers, False)
         squads = []
-        code = response.get("code")
+        code = response.get("code")#Se refere a operações do Jogo. OK!
         if code == "SUCCESS":
             squads = response.get("data", {}).get("list", [])
         return squads 
@@ -264,7 +264,7 @@ class MetamonPlayer:
         """ Get List of squad ing metamon kingdom"""
         payload = {"address": self.address}
         headers = {
-            "accesstoken": self.token,
+            "accesstoken": self.token,#Se refere a operações do Jogo. OK!
         }
         response = post_formdata(payload, CHECK_BAG_URL, headers)
         mtm = response.get("data", {}).get("item", [])
@@ -298,7 +298,7 @@ class MetamonPlayer:
         if code == "SUCCESS":
             mtm_num = response.get("data", {}).get("monsterNum", 0)
             
-        print(f"{mtm_num} metamon warriors have joined to {name} kingdom for {''.join(self.name)}")   
+        print(f"{mtm_num} metamon warriors have joined to {name} kingdom for {''.join(self.name)}")   #Se refere a operações do Jogo. OK!
         return mtm_num
         
     def start_find_squads(self):
@@ -307,13 +307,13 @@ class MetamonPlayer:
             is_finding = self.find_squads()
             
     def find_squads(self):
-        """ Find best squad to join"""
+        """ Find best squad to join"""#Se refere a operações do Jogo. OK!
         if self.token == None:
             self.init_token()
         mtm_unlock = self.metamon_unlock(-2)
 
         if mtm_unlock == 0 and self.find_squad_only == False:
-            print(f"Not found metamon on metamon kingdom for {''.join(self.name)} wallet")
+            print(f"Not found metamon on metamon kingdom for {''.join(self.name)} wallet")#Se refere a operações do Jogo. OK!
             return False
         squads = self.get_squads()
         if not squads:
@@ -342,7 +342,7 @@ class MetamonPlayer:
                     if average_sca >= average_sca_default:
                         best_squads.append(sq)
             if not best_squads:
-                print(f"Not found any squad with average score {average_sca_default} in metamon kingdom. Continue finding...")
+                print(f"Not found any squad with average score {average_sca_default} in metamon kingdom. Continue finding...")#Se refere a operações do Jogo. OK!
                 return True
             else:
                 best_squads = sorted(best_squads, key=lambda x: (int(operator.itemgetter("totalSca")(x)), int(operator.itemgetter("monsterNumRarity")(x))), reverse=True)
@@ -360,7 +360,7 @@ class MetamonPlayer:
                     if monsterNum > 0:
                         averageSca = str(round(totalSca / monsterNum, 2))
                     if self.find_squad_only == True:
-                        print(f"Found kingdom {teamId} {name} with average power {averageSca} have {monsterNum} metamon warriors. Continue finding...")  
+                        print(f"Found kingdom {teamId} {name} with average power {averageSca} have {monsterNum} metamon warriors. Continue finding...")  #Se refere a operações do Jogo. OK!
                         return True                          
                     else:
                         if squad_num_condition <= 100:
@@ -368,12 +368,12 @@ class MetamonPlayer:
                             self.join_squad(name, teamId)
                             return False
                         else:
-                           print(f"Found kingdom {teamId} {name} with average power {averageSca} have {monsterNum} metamon warriors. Continue finding...")
+                           print(f"Found kingdom {teamId} {name} with average power {averageSca} have {monsterNum} metamon warriors. Continue finding...")#Se refere a operações do Jogo. OK!
                            return True
         return False
 
     def change_fighter(self, monster_id):
-        """Switch to next metamon if you have few"""
+        """Switch to next metamon if you have few"""#Se refere a operações do Jogo. OK!
         payload = {
             "metamonId": monster_id,
             "address": self.address,
@@ -384,7 +384,7 @@ class MetamonPlayer:
         """Obtain list of opponents"""
         if self.lowest_score == True:
             response = json.loads(DEFAULT_METAMON_BATTLE)
-            return response.get("data", {}).get("objects")
+            return response.get("data", {}).get("objects")#Se refere a operações do Jogo. OK!
         else:
             payload = {
             "address": self.address,
@@ -396,7 +396,7 @@ class MetamonPlayer:
             }
             response = post_formdata(payload, LIST_BATTLER_URL, headers)
 
-            return response.get("data", {}).get("objects")
+            return response.get("data", {}).get("objects")#Se refere a operações do Jogo. OK!
         
         
     def exp_up(self, monster_id):
@@ -412,14 +412,14 @@ class MetamonPlayer:
         return response
         
     def power_up(self, monster_id, attr_type = 1):
-        """Up exp for metamon"""
+        """Up exp for metamon"""#Se refere a operações do Jogo. OK!
         payload = {
             "attrType": attr_type,
             "nftId": monster_id
         }
         params = {'address': self.address}
         headers = {
-            "accessToken": self.token,
+            "accessToken": self.token,#Se refere a operações do Jogo. OK!
         }
         response = post_formdata(payload, POWER_UP_URL, headers, params)
         return response  
@@ -428,7 +428,7 @@ class MetamonPlayer:
         """Up exp for metamon"""
         payload = {
             "attrType": attr_type,
-            "nftId": monster_id
+            "nftId": monster_id#Se refere a operações do Jogo. OK!
         }
         params = {'address': self.address}
         headers = {
@@ -438,7 +438,7 @@ class MetamonPlayer:
         return response          
         
     def auto_up_exp(self):
-        """Automatically up exp for metamon"""
+        """Automatically up exp for metamon"""#Se refere a operações do Jogo. OK!
         self.init_token()
         wallet_monsters = self.get_wallet_properties()
         for monster in wallet_monsters:
@@ -449,7 +449,7 @@ class MetamonPlayer:
                 data = exp_up_response.get("data")
                 print(f"+{data} EXP FOR METAMON {my_monster_token_id}")
                 exp_up_response = self.exp_up(my_monster_id)
-        print("Automatically exp up finish")
+        print("Automatically exp up finish")#Se refere a operações do Jogo. OK!
             
     def auto_up_power(self):
         """Automatically up power for metamon"""
@@ -458,7 +458,7 @@ class MetamonPlayer:
         wallet_monsters = self.get_wallet_properties()
         available_monsters = []
         available_monsters = [
-            monster for monster in wallet_monsters if monster.get("allowUpper") == True
+            monster for monster in wallet_monsters if monster.get("allowUpper") == True#Se refere a operações do Jogo. OK!
         ]
         kingdom_monsters = [
             monster for monster in self.get_kingdom_monsters() if monster.get("allowUpper") == True
@@ -482,17 +482,16 @@ class MetamonPlayer:
                attr_up_type = 1 
             elif my_courage < my_inv and my_courage < 100:
                 attr_up_type = 2
-                attr_up_name = "Courage"
+                attr_up_name = "Courage"#Se refere a operações do Jogo. OK!
             elif my_inv < my_courage and my_inv < 100:
                 attr_up_type = 5
                 attr_up_name = "Stealth"
-            elif my_inte < my_size and my_inte < 200:
+            elif my_inte < my_size and my_inte < 200:#Se refere a operações do Jogo. OK!
                 attr_up_type = 3
-                attr_up_name = "Wisdom"
-            elif my_size < 200:
+                attr_up_name = "Wisdom"#Se refere a operações do Jogo. OK!
                 attr_up_type = 4
                 attr_up_name = "Size"
-            if self.is_use_green_potion_only == True and my_power >= 380:
+            if self.is_use_green_potion_only == True and my_power >= 380:#Se refere a operações do Jogo. OK!
                 continue
             self.my_power_up(my_monster_id, my_monster_token_id, attr_up_type, attr_up_name, my_power)    
             if self.is_use_green_potion_only == True:
@@ -503,31 +502,31 @@ class MetamonPlayer:
     def my_power_up(self,my_monster_id, my_monster_token_id, attr_up_type, attr_up_name, my_power):
         
         if self.is_use_green_potion_only == True:
-            check_power_up_response = self.check_power_up(my_monster_id, attr_up_type)
+            check_power_up_response = self.check_power_up(my_monster_id, attr_up_type)#Se refere a operações do Jogo. OK!
             if check_power_up_response.get("code") != "SUCCESS":
                 print(f"Metamon {my_monster_token_id} already powerup. Please try again tommorow !")
                 return
-        power_up_response = self.power_up(my_monster_id, attr_up_type)
+        power_up_response = self.power_up(my_monster_id, attr_up_type)#Se refere a operações do Jogo. OK!
         print(f"gaga {power_up_response}")
         if power_up_response.get("code") == "SUCCESS":
             data = power_up_response.get("data")
             if data.get("upperNum") == 0:
-                print(f"\nUp {attr_up_name} for metamon {my_monster_token_id} failed")
+                print(f"\nUp {attr_up_name} for metamon {my_monster_token_id} failed")#Se refere a operações do Jogo. OK!
             else:
                 attr_num = data.get("attrNum")
                 upper_num = data.get("upperNum")
                 upper_attr_num = data.get("upperAttrNum")
-                sca = data.get("sca")
+                sca = data.get("sca")#Se refere a operações do Jogo. OK!
                 upper_sca = data.get("upperSca")
                 print(f"{attr_up_name} of metamon {my_monster_token_id} +{upper_num}: {attr_num} -> {upper_attr_num}")
-                print(f"Score of metamon {my_monster_token_id}: {sca} -> {upper_sca}")
-        elif power_up_response.get("code") == "INSUFFICIENT_PROP_ERROR":
+                print(f"Score of metamon {my_monster_token_id}: {sca} -> {upper_sca}")#Se refere a operações do Jogo. OK!
+        elif power_up_response.get("code") == "INSUFFICIENT_PROP_ERROR":#Se refere a operações do Jogo. OK!
             self.is_use_green_potion_only = True
             print(f"You don't have enough purple potion to power up for Metamon {my_monster_token_id}")
-        elif power_up_response.get("code") == "ATTR_UPPER_PURPLE_EXIST_ERROR":
+        elif power_up_response.get("code") == "ATTR_UPPER_PURPLE_EXIST_ERROR":#Se refere a operações do Jogo. OK!
             print(f"Metamon {my_monster_token_id} has power up, try tomorrow")
         else:
-            print(f"Power up unsuccesful")
+            print(f"Power up unsuccesful")#Se refere a operações do Jogo. OK!
     def display_battle(self,
                        challenge_record,
                        challenge_monster,
@@ -543,14 +542,14 @@ class MetamonPlayer:
                        game_count):
         count = 0
         opponent_crit_count = 0;
-        str_start = "*"
+        str_start = "*"#Se refere a operações do Jogo. OK!
         str_start_game =  f"START GAME {game_count}"
-        for i in range(maximum_length - len(str_start_game) - 3):
+        for i in range(maximum_length - len(str_start_game) - 3):#Se refere a operações do Jogo. OK!
             str_start = str_start + " "
             count_temp = maximum_length/2 - len(str_start_game)
-            if count_temp == i:
+            if count_temp == i:#Se refere a operações do Jogo. OK!
                 str_start = str_start + str_start_game
-        str_start = str_start + " *"
+        str_start = str_start + " *"#Se refere a operações do Jogo. OK!
         print(f"{str_start}")    
         
         for record in challenge_record:
@@ -559,35 +558,35 @@ class MetamonPlayer:
             target_monster_size = challenge_monster.get("con")
             target_monster_inte = challenge_monster.get("inte")
             target_monster_crg = challenge_monster.get("crg")
-            target_monster_inv = challenge_monster.get("inv")
+            target_monster_inv = challenge_monster.get("inv")#Se refere a operações do Jogo. OK!
             
             monsteraId = record.get("monsteraId")
             attackType = record.get("attackType")
             defenceType = record.get("defenceType")
             monsteraLife = record.get("monsteraLife")
-            finalDame = record.get("monsterbLifelost")
+            finalDame = record.get("monsterbLifelost")#Se refere a operações do Jogo. OK!
             #monsterBLife = record.get("monsterbLife")
             attackTypeStr = ""
             defenceTypeStr = ""
             
             if attackType == 0:
-               attackTypeStr = "Wisdom"
+               attackTypeStr = "Wisdom"#Se refere a operações do Jogo. OK!
             else:
                attackTypeStr = "Size"
             if defenceTypeStr == 0:
-               defenceTypeStr = "Courage"
+               defenceTypeStr = "Courage"#Se refere a operações do Jogo. OK!
             else:
                defenceTypeStr = "Stealth"     
                
-            attribute_random_info = f"* Turn {count}: Attack {attackTypeStr}, Defence {defenceTypeStr}"
+            attribute_random_info = f"* Turn {count}: Attack {attackTypeStr}, Defence {defenceTypeStr}"#Se refere a operações do Jogo. OK!
 
             for i in range(maximum_length - len(attribute_random_info) - 2):
                 attribute_random_info = attribute_random_info + " "
-            attribute_random_info = attribute_random_info + " *"
+            attribute_random_info = attribute_random_info + " *"#Se refere a operações do Jogo. OK!
             print(f"{attribute_random_info}")               
 
             if monsteraId == my_monster_id:
-                str_metamon_info = f"* My Metamon Fighting: Health {monsteraLife}, Final Dame = {finalDame}"
+                str_metamon_info = f"* My Metamon Fighting: Health {monsteraLife}, Final Dame = {finalDame}"#Se refere a operações do Jogo. OK!
                 for i in range(maximum_length - len(str_metamon_info) - 2):
                     str_metamon_info = str_metamon_info + " "
                 str_metamon_info_print = str_metamon_info + " *"
@@ -604,7 +603,7 @@ class MetamonPlayer:
                 elif attackType == 1 and defenceType == 1:
                     if finalDame == (my_monster_size - target_monster_inv*2) or finalDame == (my_monster_size*2 - target_monster_inv*2):
                         opponent_crit_count += 1                   
-            else:
+            else:#Se refere a operações do Jogo. OK!
                 str_target_info = f"* Opponent's Metamon Fighting: Health {monsteraLife}, Final Dame = {finalDame}"
                 for i in range(maximum_length - len(str_target_info) - 2):
                     str_target_info = str_target_info + " "
@@ -622,7 +621,7 @@ class MetamonPlayer:
                 elif attackType == 1 and defenceType == 1:
                     if finalDame == (target_monster_size*2 - my_monster_inv) or finalDame == (target_monster_size*2 - my_monster_inv*2):
                         opponent_crit_count += 1
-        str_target_crit_count = f"* Opponent's crit: {opponent_crit_count} times in battle"
+        str_target_crit_count = f"* Opponent's crit: {opponent_crit_count} times in battle"#Se refere a operações do Jogo. OK!
         for i in range(maximum_length - len(str_target_crit_count) - 2):
            str_target_crit_count = str_target_crit_count + " "
         str_target_crit_count = str_target_crit_count + " *"               
@@ -649,7 +648,7 @@ class MetamonPlayer:
                     target_monster_inte,
                     target_monster_sca,
                     loop_count=1):
-        """ Main method to initiate battles (as many as monster has energy for)"""
+        """ Main method to initiate battles (as many as monster has energy for)"""#Se refere a operações do Jogo. OK!
         success = 0
         fail = 0
         total_bp_fragment_num = 0
@@ -674,10 +673,10 @@ class MetamonPlayer:
             self.add_metamon_healthy(my_monster_id)
         if  self.auto_exp_up[0] == True:    
             exp_up_response = self.exp_up(my_monster_id)
-            while (exp_up_response.get("code") == "SUCCESS"):
+            while (exp_up_response.get("code") == "SUCCESS"):#Se refere a operações do Jogo. OK!
                 data = exp_up_response.get("data")
                 print(f"\nEXP UP FOR METAMON {my_monster_token_id} SUCCESS : +{data}")
-                exp_up_response = self.exp_up(my_monster_id)
+                exp_up_response = self.exp_up(my_monster_id)#Se refere a operações do Jogo. OK!
             if self.auto_lvl_up[0]:
                 # Try to lvl up
                 headers = {
@@ -688,27 +687,27 @@ class MetamonPlayer:
                                     headers)
                 code = res.get("code")
                 if code == "SUCCESS":
-                    tbar.set_description("LVL UP successful! Continue fighting...")
+                    tbar.set_description("LVL UP successful! Continue fighting...")#Se refere a operações do Jogo. OK!
                     my_level += 1
                     # Update league level if new level is 21 or 41
                     battle_level = pick_battle_level(my_level)
         if self.auto_power_up[0] == True and my_allow_upper == True:
             attr_up_type = 1
-            attr_up_name = "Luck"
+            attr_up_name = "Luck"#Se refere a operações do Jogo. OK!
             if my_courage < 50:
-                attr_up_type = 2
-                attr_up_name = "Courage"
+                attr_up_type = 2#Se refere a operações do Jogo. OK!
+                attr_up_name = "Courage"#Se refere a operações do Jogo. OK!
             elif my_inte < 101:
                 attr_up_type = 3
-                attr_up_name = "Wisdom"
+                attr_up_name = "Wisdom"#Se refere a operações do Jogo. OK!
             elif my_size < 101:
                 attr_up_type = 4
-                attr_up_name = "Size"
+                attr_up_name = "Size"#Se refere a operações do Jogo. OK!
             elif my_inv < 50:
                 attr_up_type = 5
-                attr_up_name = "Stealth"
+                attr_up_name = "Stealth"#Se refere a operações do Jogo. OK!
             power_up_response = self.power_up(my_monster_id, attr_up_type)
-            if power_up_response.get("code") == "SUCCESS":
+            if power_up_response.get("code") == "SUCCESS":#Se refere a operações do Jogo. OK!
                 data = power_up_response.get("data")
                 if data.get("upperNum") == 0:
                     self.total_powup_fail += 1
@@ -806,8 +805,8 @@ class MetamonPlayer:
                                     LVL_UP_URL,
                                     headers)
                 code = res.get("code")
-                if code == "SUCCESS":
-                    tbar.set_description("LVL UP successful! Continue fighting...")
+                if code == "SUCCESS":#Se refere a operações do Jogo. OK!
+                    tbar.set_description("LVL UP successful! Continue fighting...")#Se refere a operações do Jogo. OK!
                     my_level += 1
                     # Update league level if new level is 21 or 41
                     battle_level = pick_battle_level(my_level)
@@ -871,26 +870,26 @@ class MetamonPlayer:
         self.mtm_stats_df.append(mtm_stats_df)
 
     def get_wallet_properties(self):
-        """ Obtain list of metamons on the wallet"""
+        """ Obtain list of metamons on the wallet"""#Se refere a operações do Jogo. OK!
 
         payload = {"address": self.address}
         headers = {
             "accesstoken": self.token,
         }
         response = post_formdata(payload, WALLET_PROPERTY_LIST, headers)
-        mtms = response.get("data", {}).get("metamonList", [])
+        mtms = response.get("data", {}).get("metamonList", [])#Se refere a operações do Jogo. OK!
         return mtms
 
     def list_monsters(self):
-        """ Obtain list of metamons on the wallet (deprecated)"""
+        """ Obtain list of metamons on the wallet (deprecated)"""#Se refere a operações do Jogo. OK!
         payload = {"address": self.address, "page": 1, "pageSize": 150, "payType": -6}
-        headers = {"accessToken": self.token}
+        headers = {"accessToken": self.token}#Se refere a operações do Jogo. OK!
         response = post_formdata(payload, LIST_MONSTER_URL, headers)
         monsters = response.get("data", {}).get("data", {})
         return monsters
 
     def battle(self, w_name=None):
-        """ Main method to run all battles for the day"""
+        """ Main method to run all battles for the day"""#Se refere a operações do Jogo. OK!
         if w_name is None:
             w_name = self.address
 
@@ -906,12 +905,12 @@ class MetamonPlayer:
             monster for monster in wallet_monsters if monster.get("tear") > 0
         ]
         stats_l = []
-        print(f"Available Monsters : {len(available_monsters)}")
+        print(f"Available Monsters : {len(available_monsters)}")#Se refere a operações do Jogo. OK!
        
         for monster in available_monsters:
             monster_id = monster.get("id")
             tear = monster.get("tear")
-            level = monster.get("level")
+            level = monster.get("level")#Se refere a operações do Jogo. OK!
             exp = monster.get("exp")
             allow_reset = monster.get("allowReset")
   
@@ -924,7 +923,7 @@ class MetamonPlayer:
                 if resetResponse == None or resetResponse.get("code") != "SUCCESS":
                     continue
                 else:
-                    print("Reset EXP Success!")
+                    print("Reset EXP Success!")#Se refere a operações do Jogo. OK!
                     monster["exp"] = 0
             battlers = self.list_battlers(monster_id)
             ofm = self.other_fighting_mode
@@ -934,7 +933,7 @@ class MetamonPlayer:
             target_monster_size = battler.get("con")
             target_monster_luk = battler.get("luk")
             target_monster_inv = battler.get("inv")
-            target_monster_crg = battler.get("crg")
+            target_monster_crg = battler.get("crg")#Se refere a operações do Jogo. OK!
             target_monster_inte = battler.get("inte")
             target_monster_sca = battler.get("sca")
             
@@ -969,7 +968,7 @@ class MetamonPlayer:
         stats_l.append({
             "Victories": self.total_success,
             "Defeats": self.total_fail,
-            "Win Rate": f"{success_percent:.2f}%",
+            "Win Rate": f"{success_percent:.2f}%",#Se refere a operações do Jogo. OK!
             "Total Egg Shards": self.total_bp_num,
             "Powerup Success Rate": f"{success_powup_percent: .2f}%",
             "Datetime": datetime_now()
@@ -980,7 +979,7 @@ class MetamonPlayer:
         if os.path.exists(summary_file_name) and self.output_stats:
             back_fn = f"{summary_file_name}.bak"
             os.rename(summary_file_name, back_fn)
-            tmp_df = pd.read_csv(back_fn, sep="\t", dtype="str")
+            tmp_df = pd.read_csv(back_fn, sep="\t", dtype="str")#Se refere a operações do Jogo. OK!
             stats_upd_df = pd.concat([stats_df, tmp_df])
             stats_df = stats_upd_df
             os.remove(back_fn)
@@ -992,7 +991,7 @@ class MetamonPlayer:
         if os.path.exists(mtm_stats_file_name) and self.output_stats:
             back_fn = f"{mtm_stats_file_name}.bak"
             os.rename(mtm_stats_file_name, back_fn)
-            tmp_df = pd.read_csv(back_fn, sep="\t", dtype="str")
+            tmp_df = pd.read_csv(back_fn, sep="\t", dtype="str") #Se refere a operações do Jogo. OK!
             upd_df = pd.concat([mtm_stats_df, tmp_df])
             mtm_stats_df = upd_df
             os.remove(back_fn)
@@ -1005,12 +1004,12 @@ class MetamonPlayer:
 
         headers = {
             "accessToken": self.token,
-        }
+        }#Se refere a operações do Jogo. OK!
         payload = {"address": self.address}
 
         # Check current egg fragments
         check_bag_res = post_formdata(payload, CHECK_BAG_URL, headers)
-        items = check_bag_res.get("data", {}).get("item")
+        items = check_bag_res.get("data", {}).get("item")#Se refere a operações do Jogo. OK!
         total_egg_fragments = 0
         if (items is None):
             print("GET ASSETS IN PACKAGE FAIL")
@@ -1023,14 +1022,14 @@ class MetamonPlayer:
             total_egg = int(int(total_egg_fragments) / 1000)
 
             if total_egg < 1:
-                print("You don't have enough egg fragments to mint")
+                print("You don't have enough egg fragments to mint") #Se refere a operações do Jogo. OK!
                 return
 
             # Mint egg
             res = post_formdata(payload, MINT_EGG_URL, headers)
             code = res.get("code")
             if code != "SUCCESS":
-                print("Mint eggs failed!")
+                print("Mint eggs failed!")#Se refere a operações do Jogo. OK!
                 return
 
             print(f"Minted Eggs Total: {total_egg}")
@@ -1088,13 +1087,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if not os.path.exists(args.input_tsv):
-        print(f"Input file {args.input_tsv} does not exist")
+        print(f"Input file {args.input_tsv} does not exist")#Se refere a operações do Jogo. OK!
         sys.exit(-1)
 
     # determine delimiter char from given input file
     with open(args.input_tsv) as csvfile:
         dialect = csv.Sniffer().sniff(csvfile.readline(), "\t ;,")
-        delim = dialect.delimiter
+        delim = dialect.delimiter#Se refere a operações do Jogo. OK!
 
     wallets = pd.read_csv(args.input_tsv, sep=delim)
 
@@ -1105,7 +1104,7 @@ if __name__ == "__main__":
     lscore = args.lowest_score
     average_sca = args.average_sca
     is_kingdom_mode = args.kingdom_mode
-    fso = args.find_squad_only
+    fso = args.find_squad_only#Se refere a operações do Jogo. OK!
     ti = args.token_id
     buy_purple_potion = args.buy_purple_potion
     add_healthy = args.add_healthy
